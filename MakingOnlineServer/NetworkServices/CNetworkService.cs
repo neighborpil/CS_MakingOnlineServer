@@ -94,10 +94,85 @@ namespace NetworkServices
             listener.start(host, port, backlog);
         }
 
+        /// <summary>
+        /// 새로운 클라이언트가 접속 성공 했을 때 호출됩니다.
+        /// AcceptAsync의 콜백 매소드에서 호출되며 여러 스레드에서 동시에 호출될 수 있기 때문에 공유자원에 접근할 때는 주의해야 합니다.
+        /// </summary>
+        /// <param name="client_socket"></param>
         private void on_new_client(Socket client_socket, object token)
         {
-            
+            // 풀에서 하나 꺼내와 사용한다
+            SocketAsyncEventArgs receive_args = this.receive_event_args_pool.Pop();
+            SocketAsyncEventArgs send_args = this.send_event_args_pool.Pop();
 
+            //SocketAsyncEventArgs를 생성할 때 만들어 두었던 CUserToken을 꺼내 와서 콜백 메서드의 파라미터로 넘겨준다
+            if(this.session_created_callback != null)
+            {
+                CUserToken user_token = receive_args.UserToken as CUserToken;
+                this.session_created_callback(user_token);
+            }
+
+            // 클라이언트로부터 데이터를 수신할 준비를 한다
+            begin_receive(client_socket, receive_args, send_args);
+        }
+
+        private void begin_receive(Socket socket, SocketAsyncEventArgs receive_args, SocketAsyncEventArgs send_args)
+        {
+            // receive_args, send_args 아무곳에서나 꺼내와도 된다. 둘다 동일한 CUserToken을 물고 있다.
+            CUserToken token = receive_args.UserToken as CUserToken;
+            token.set_event_args(receive_args, send_args);
+
+            // 생성된 클라이언트 소켓을 보관해 놓고 통신할 때 사용한다.
+            token.socket = socket;
+
+            // 데이터를 받을 수 있도록 수신 메서드를 호출해 준다
+            // 비동기로 수신될 경우 워커 스레드에서 대기 중으로 있다가 Completed에 설정해 놓은 메서드가 호출된다
+            // 동기로 완료될 경우에는 직접 완료 메서드를 호출해줘야 한다
+            bool pending = socket.ReceiveAsync(receive_args);
+            if (!pending)
+            {
+                process_receive(receive_args);
+            }
+        }
+
+        // This method is called whenever a receive or send operation is completed on a socket 
+        //
+        // <param name="e">SocketAsyncEventArg associated with the completed receive operation</param>
+        private void receive_completed(object sender, SocketAsyncEventArgs e)
+        {
+            if(e.LastOperation == SocketAsyncOperation.Receive)
+            {
+                process_receive(e);
+                return;
+            }
+
+            throw new ArgumentException("The last operation completed on the socket was not a receive");
+        }
+
+        // This method is invoked when an asynchronous receive operation completes. 
+        // If the remote host closed the connection, then the socket is closed.  
+        //
+        private void process_receive(SocketAsyncEventArgs e)
+        {
+            // check if the remote host closed the connection
+            CUserToken token = e.UserToken as CUserToken;
+            if(e.BytesTransferred > 0 && e.SocketError == SocketError.Success)
+            {
+                // 이후의 작업은 CUserToken에 맡긴다
+                token.on_receive(e.Buffer, e.Offset, e.BytesTransferred);
+
+                // 다음 메시지 수신을 위하여 다시 ReceiveAsync 메서드를 호출한다
+                bool pending = token.socket.ReceiveAsync(e);
+                if (!pending)
+                {
+                    process_receive(e);
+                }
+            }
+            else
+            {
+                Console.WriteLine($"error {e.SocketError}, transferred {e.BytesTransferred}");
+                close_clientsocket(token);
+            }
         }
     }
 }
