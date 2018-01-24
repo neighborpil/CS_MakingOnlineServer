@@ -39,6 +39,7 @@ namespace NetworkServices
             this.max_connections = 1000;
             this.buffer_size = 1024;
 
+            //버퍼 전체 사이즈 = 최대 동접 수치 * 버퍼 하나의 크기 * (전송용 1개 + 수신용 1개)
             this.buffer_manager = new BufferManager(this.max_connections * this.buffer_size * this.pre_alloc_count, this.buffer_size);
             this.receive_event_args_pool = new SocketAsyncEventArgsPool(this.max_connections);
             this.send_event_args_pool = new SocketAsyncEventArgsPool(this.max_connections);
@@ -146,6 +147,7 @@ namespace NetworkServices
                 return;
             }
 
+            // 오류시 Exception 던져줌
             throw new ArgumentException("The last operation completed on the socket was not a receive");
         }
 
@@ -159,6 +161,9 @@ namespace NetworkServices
             if(e.BytesTransferred > 0 && e.SocketError == SocketError.Success)
             {
                 // 이후의 작업은 CUserToken에 맡긴다
+                // e.Buffer : 클라이언트로부터 수신된 데이터
+                // e.Offset : 버퍼의 포지션
+                // e.BytesTransferred : 이번에 수신된 바이트 수
                 token.on_receive(e.Buffer, e.Offset, e.BytesTransferred);
 
                 // 다음 메시지 수신을 위하여 다시 ReceiveAsync 메서드를 호출한다
