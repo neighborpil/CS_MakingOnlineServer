@@ -153,6 +153,19 @@ namespace NetworkServices
             // 헤더에서 메시지의 사이즈를 구한다
             // 헤더 타입은 Int16, Int32 두 가지가 올 수 있으므로 각각을 구분하여 처리한다
             // 사실 헤더가 바뀔 경우는 없을테니 그냥 한 가지로 고정하는 편이 깔끔할 것 같다
+            Type type = Defines.HEADERSIZE.GetType();
+            if (type.Equals(typeof(Int16)))
+                return BitConverter.ToInt16(this.message_buffer, 0);
+
+            return BitConverter.ToInt32(this.message_buffer, 0);
+        }
+
+        void clear_buffer()
+        {
+            Array.Clear(this.message_buffer, 0, this.message_buffer.Length);
+
+            this.current_position = 0;
+            this.message_size = 0;
         }
     }
 }

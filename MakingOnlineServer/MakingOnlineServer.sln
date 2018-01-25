@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MakingOnlineServer", "Makin
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetworkServices", "NetworkServices\NetworkServices.csproj", "{9B99AD04-67D3-4C61-BAF9-457EEF4E6713}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSampleServer", "CSampleServer\CSampleServer.csproj", "{2A1E7313-56D0-42C7-A5DB-D07B10C9F94B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSampleClient", "CSampleClient\CSampleClient.csproj", "{7167B62F-3D2D-4BAA-A984-98A4E50C513C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{9B99AD04-67D3-4C61-BAF9-457EEF4E6713}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9B99AD04-67D3-4C61-BAF9-457EEF4E6713}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9B99AD04-67D3-4C61-BAF9-457EEF4E6713}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A1E7313-56D0-42C7-A5DB-D07B10C9F94B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A1E7313-56D0-42C7-A5DB-D07B10C9F94B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A1E7313-56D0-42C7-A5DB-D07B10C9F94B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A1E7313-56D0-42C7-A5DB-D07B10C9F94B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7167B62F-3D2D-4BAA-A984-98A4E50C513C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7167B62F-3D2D-4BAA-A984-98A4E50C513C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7167B62F-3D2D-4BAA-A984-98A4E50C513C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7167B62F-3D2D-4BAA-A984-98A4E50C513C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

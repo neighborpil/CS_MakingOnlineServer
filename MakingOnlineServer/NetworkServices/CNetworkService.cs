@@ -96,6 +96,31 @@ namespace NetworkServices
         }
 
         /// <summary>
+		/// todo:검토중...
+		/// 원격 서버에 접속 성공 했을 때 호출됩니다.
+		/// </summary>
+		/// <param name="socket"></param>
+        public void on_connect_completed(Socket socket, CUserToken token)
+        {
+            // SocketAsyncEventArgsPool에서 빼오지 않고 그때 그때 할당해서 사용한다.
+            // 풀은 서버에서 클라이언트와의 통신용으로만 쓰려고 만든것이기 때문이다.
+            // 클라이언트 입장에서 서버와 통신을 할 때는 접속한 서버당 두개의 EventArgs만 있으면 되기 때문에 그냥 new해서 쓴다.
+            // 서버간 연결에서도 마찬가지이다.
+            // 풀링처리를 하려면 c->s로 가는 별도의 풀을 만들어서 써야 한다.
+            SocketAsyncEventArgs receive_event_arg = new SocketAsyncEventArgs();
+            receive_event_arg.Completed += new EventHandler<SocketAsyncEventArgs>(receive_completed);
+            receive_event_arg.UserToken = token;
+            receive_event_arg.SetBuffer(new byte[1024], 0, 1024);
+
+            SocketAsyncEventArgs send_event_arg = new SocketAsyncEventArgs();
+            send_event_arg.Completed += new EventHandler<SocketAsyncEventArgs>(send_completed);
+            send_event_arg.UserToken = token;
+            send_event_arg.SetBuffer(new byte[1024], 0, 1024);
+
+            begin_receive(socket, receive_event_arg, send_event_arg);
+        }
+
+        /// <summary>
         /// 새로운 클라이언트가 접속 성공 했을 때 호출됩니다.
         /// AcceptAsync의 콜백 매소드에서 호출되며 여러 스레드에서 동시에 호출될 수 있기 때문에 공유자원에 접근할 때는 주의해야 합니다.
         /// </summary>
@@ -151,6 +176,15 @@ namespace NetworkServices
             throw new ArgumentException("The last operation completed on the socket was not a receive");
         }
 
+        // This method is called whenever a receive or send operation is completed on a socket 
+        //
+        // <param name="e">SocketAsyncEventArg associated with the completed send operation</param>
+        void send_completed(object sender, SocketAsyncEventArgs e)
+        {
+            CUserToken token = e.UserToken as CUserToken;
+            token.process_send(e);
+        }
+
         // This method is invoked when an asynchronous receive operation completes. 
         // If the remote host closed the connection, then the socket is closed.  
         //
@@ -178,6 +212,20 @@ namespace NetworkServices
                 Console.WriteLine($"error {e.SocketError}, transferred {e.BytesTransferred}");
                 close_clientsocket(token);
             }
+        }
+
+        public void close_clientsocket(CUserToken token)
+        {
+            token.on_removed();
+
+            // Free the SocketAsyncEventArg so they can be reused by another client
+            // 버퍼는 반환할 필요가 없다. SocketAsyncEventArg가 버퍼를 물고 있기 때문에
+            // 이것을 재사용 할 때 물고 있는 버퍼를 그대로 사용하면 되기 때문이다.
+            if (this.receive_event_args_pool != null)
+                this.receive_event_args_pool.Push(token.receive_event_args);
+
+            if (this.send_event_args_pool != null)
+                this.send_event_args_pool.Push(token.send_event_args);
         }
     }
 }
