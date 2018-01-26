@@ -1,0 +1,4 @@
+sceneSetups:
+- path: "C:/Study/Git/CS_MakingOnlineServer/ExampleSourceCode/\uC18C\uC2A4\uCF54\uB4DC/unity_sourcecode/Assets/main.unity"
+  isLoaded: 1
+  isActive: 1

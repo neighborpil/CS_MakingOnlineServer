@@ -97,8 +97,6 @@ namespace FreeNet
 			return data;
 		}
 
-
-
 		public void set_protocol(Int16 protocol_id)
 		{
 			this.protocol_id = protocol_id;
