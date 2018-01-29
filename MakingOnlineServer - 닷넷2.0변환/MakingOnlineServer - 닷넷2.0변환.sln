@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSampleServer", "CSampleSer
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSampleClient", "CSampleClient\CSampleClient.csproj", "{7167B62F-3D2D-4BAA-A984-98A4E50C513C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VirusWarGameServer", "VirusWarGameServer\VirusWarGameServer.csproj", "{43A8E192-F61C-4412-88E6-0E4653F8F68C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{7167B62F-3D2D-4BAA-A984-98A4E50C513C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7167B62F-3D2D-4BAA-A984-98A4E50C513C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7167B62F-3D2D-4BAA-A984-98A4E50C513C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{43A8E192-F61C-4412-88E6-0E4653F8F68C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{43A8E192-F61C-4412-88E6-0E4653F8F68C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{43A8E192-F61C-4412-88E6-0E4653F8F68C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{43A8E192-F61C-4412-88E6-0E4653F8F68C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
